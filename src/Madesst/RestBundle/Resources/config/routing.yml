@@ -1,0 +1,16 @@
+madesst_rest_homepage:
+  pattern:  /hello/{name}
+  defaults: { _controller: MadesstRestBundle:Default:index }
+
+madesst_rest_product_all:
+  pattern:  /products
+  defaults: { _controller: MadesstRestBundle:Product:all, _format: 'json' }
+  requirements:
+    _method: GET
+
+madesst_rest_product_get:
+  pattern:  /product/{id}
+  defaults: { _controller: MadesstRestBundle:Product:get, _format: 'json' }
+  requirements:
+    _method: GET
+    id: "\d+"

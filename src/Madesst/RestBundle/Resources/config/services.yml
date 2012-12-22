@@ -1,0 +1,7 @@
+parameters:
+#    madesst_rest.example.class: Madesst\RestBundle\Example
+
+services:
+#    madesst_rest.example:
+#        class: %madesst_rest.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]

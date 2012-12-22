@@ -1,0 +1,9 @@
+Madesst\RestBundle\Propel\om\BaseProduct:
+    exclusion_policy: ALL
+    properties:
+        id:
+            expose: true
+        name:
+            expose: true
+        description:
+            expose: true
