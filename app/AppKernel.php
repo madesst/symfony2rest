@@ -22,7 +22,7 @@ class AppKernel extends Kernel
 			new JMS\SerializerBundle\JMSSerializerBundle(),
 			new FOS\RestBundle\FOSRestBundle(),
 			new Propel\PropelBundle\PropelBundle(),
-            new Madesst\RestBundle\MadesstRestBundle(),
+            new Madesst\RestBundle\MadesstRestBundle()
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

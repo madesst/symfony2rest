@@ -22,7 +22,8 @@
 		"phpcollection/phpcollection": "0.1.*@dev",
 		"jms/serializer": "1.0.*@dev",
 		"jms/serializer-bundle": "1.0.*@dev",
-		"propel/propel-bundle": "1.1.*"
+		"propel/propel-bundle": "1.1.*",
+		"willdurand/hateoas": "dev-master"
     },
     "scripts": {
         "post-install-cmd": [

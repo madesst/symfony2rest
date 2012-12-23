@@ -7,3 +7,5 @@ Madesst\RestBundle\Propel\om\BaseProduct:
             expose: true
         description:
             expose: true
+        price:
+            expose: true

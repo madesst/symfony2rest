@@ -1,0 +1,14 @@
+Madesst\RestBundle\Propel\Product:
+    getters:
+        name:
+            - NotBlank:
+            - Length:
+                min: 5
+        description:
+            - NotBlank:
+        price:
+            - NotBlank:
+            - Type:
+                type: float
+            - Min:
+                limit: 0.01

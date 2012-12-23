@@ -8,34 +8,92 @@
  */
 namespace Madesst\RestBundle\Controller;
 
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
 use Madesst\RestBundle\Propel\Product;
 use Madesst\RestBundle\Propel\ProductQuery;
-use FOS\RestBundle\Controller\Annotations as Rest;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Madesst\RestBundle\Form\Type\ProductType;
+use FOS\RestBundle\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
-class ProductController
+use Madesst\RestBundle\Factory\ProductLinkFactory;
+use Hateoas\Builder\LinkBuilder;
+use Hateoas\Builder\ResourceBuilder;
+
+class ProductController extends Controller
 {
-	/**
-	 * @Rest\View
-	 */
 	public function AllAction()
 	{
-		$products = ProductQuery::create()->find()->getData();
+		$products = ProductQuery::create()->paginate($this->getRequest()->get('page', 1));
 
-		return array('products' => $products);
+		return $this->processRenderView($products);
 	}
 
-	/**
-	 * @Rest\View
-	 */
-	public function getAction($id)
+	public function getAction(Product $product)
 	{
-		$product = ProductQuery::create()->findPk($id);
+		return $this->processRenderView($product);
+	}
 
-		if(!$product instanceof Product) {
-			throw new NotFoundHttpException('Product not found');
+	public function newAction()
+	{
+		return $this->processForm(new Product());
+	}
+
+	public function editAction(Product $product)
+	{
+		return $this->processForm($product);
+	}
+
+	public function removeAction(Product $product)
+	{
+		$product->delete();
+		return $this->processRenderView(null, 204);
+	}
+
+	private function processForm(Product $product)
+	{
+		$statusCode = $product->isNew() ? 201 : 204;
+
+		$form = $this->createForm(new ProductType(), $product);
+		$form->bind($this->getRequest());
+
+		if($form->isValid()) {
+			$product->save();
+
+			$response = new Response();
+			$response->setStatusCode($statusCode);
+			$response->headers->set('Location',
+				$this->generateUrl(
+					'madesst_rest_product_get', array('id' => $product->getId()),
+					true
+				)
+			);
+
+			return $response;
 		}
 
-		return array('product' => $product);
+		return View::create($form, 400);
+	}
+
+	private function processRenderView($data = null, $statusCode = 200)
+	{
+		$resourceBuilder = new ResourceBuilder(
+			ProductLinkFactory::retrieveFactory(),
+			new LinkBuilder($this->get('router')));
+
+		if($data instanceof \PropelModelPager)
+		{
+			$response = $resourceBuilder->createCollection($data, 'Madesst\RestBundle\Propel\Product');
+		}
+		elseif($data !== null)
+		{
+			$response = $resourceBuilder->create($data);
+		}
+		else
+		{
+			$response = null;
+		}
+
+		return View::create($response, $statusCode);
 	}
 }

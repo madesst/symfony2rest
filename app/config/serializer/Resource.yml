@@ -1,0 +1,14 @@
+Hateoas\Resource:
+    properties:
+        data:
+            inline: true
+        resources:
+            inline: true
+        total:
+            xml_attribute: true
+        limit:
+            xml_attribute: true
+        page:
+            xml_attribute: true
+        rel:
+            xml_attribute: true

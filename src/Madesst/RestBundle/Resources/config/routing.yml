@@ -4,13 +4,33 @@ madesst_rest_homepage:
 
 madesst_rest_product_all:
   pattern:  /products
-  defaults: { _controller: MadesstRestBundle:Product:all, _format: 'json' }
+  defaults: { _controller: MadesstRestBundle:Product:all, _format: ~ }
   requirements:
     _method: GET
 
 madesst_rest_product_get:
   pattern:  /product/{id}
-  defaults: { _controller: MadesstRestBundle:Product:get, _format: 'json' }
+  defaults: { _controller: MadesstRestBundle:Product:get, _format: ~ }
   requirements:
     _method: GET
     id: "\d+"
+
+madesst_rest_product_edit:
+  pattern:  /product/{id}
+  defaults: { _controller: MadesstRestBundle:Product:edit, _format: ~ }
+  requirements:
+    _method: PUT
+    id: "\d+"
+
+madesst_rest_product_delete:
+  pattern:  /product/{id}
+  defaults: { _controller: MadesstRestBundle:Product:remove, _format: ~ }
+  requirements:
+    _method: DELETE
+    id: "\d+"
+
+madesst_rest_product_new:
+  pattern: /products
+  defaults: { _controller: MadesstRestBundle:Product:new, _format: ~ }
+  requirements:
+    _method: POST
