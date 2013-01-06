@@ -34,3 +34,16 @@ madesst_rest_product_new:
   defaults: { _controller: MadesstRestBundle:Product:new, _format: ~ }
   requirements:
     _method: POST
+
+
+madesst_rest_docs_homepage:
+  pattern: /docs
+  defaults: { _controller: MadesstRestBundle:Documentation:index, _format: html }
+  requirements:
+    _method: GET
+
+madesst_rest_docs_method:
+  pattern: /docs/{method}
+  defaults: { _controller: MadesstRestBundle:Documentation:method, _format: html }
+  requirements:
+    _method: GET

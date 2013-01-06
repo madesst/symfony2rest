@@ -94,6 +94,6 @@ class ProductController extends Controller
 			$response = null;
 		}
 
-		return View::create($response, $statusCode);
+        return View::create($response, $statusCode);
 	}
 }

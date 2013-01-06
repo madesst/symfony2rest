@@ -1,7 +1,24 @@
 parameters:
-#    madesst_rest.example.class: Madesst\RestBundle\Example
+    madesst_rest.accept_header_listener.listener_class: Madesst\RestBundle\EventListener\AcceptHeaderListener
+    madesst_rest.accept_header_listener.redirect_controller_method_name: 'methodAction'
+    # Optional
+    madesst_rest.accept_header_listener.target_request_format: 'html'
+    madesst_rest.accept_header_listener.controllers_list: []
+    madesst_rest.accept_header_listener.controllers_ignore_list: []
 
 services:
-#    madesst_rest.example:
-#        class: %madesst_rest.example.class%
-#        arguments: [@service_id, "plain_value", %parameter%]
+    madesst_rest.accept_header_listener:
+        class: %madesst_rest.accept_header_listener.listener_class%
+        arguments:
+            - @service_container
+            - %madesst_rest.accept_header_listener.redirect_controller_method_name%
+            - %madesst_rest.accept_header_listener.target_request_format%
+            - %madesst_rest.accept_header_listener.controllers_list%
+            - %madesst_rest.accept_header_listener.controllers_ignore_list%
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
+
+    madesst_rest.documentation_controller:
+        class: Madesst\RestBundle\Controller\DocumentationController
+        arguments:
+            - @service_container
