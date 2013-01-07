@@ -41,7 +41,7 @@ class AcceptHeaderListener
 		$this->controllers_ignore_list = $controllers_ignore_list;
 
 		//Prevent stupid flow
-		$this->controllers_ignore_list[] = $this->container->get('madesst_rest.documentation_controller');
+		$this->controllers_ignore_list[] = get_class($this->container->get('madesst_rest.documentation_controller'));
 
 		//Prevent web profiler disapper
 		$this->controllers_ignore_list[] = 'Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController';
