@@ -23,7 +23,7 @@ class PartialDocumentationController extends ApiDocController
 		$this->container = $container;
 	}
 
-	public function partialDocumentationAction($resource = '')
+	public function partialDocumentationAction($resource)
 	{
 		$allExtractedDoc = $this->get('nelmio_api_doc.extractor.api_doc_extractor')->all();
 

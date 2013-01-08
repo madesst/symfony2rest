@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 class AcceptHeaderListener
 {
+	protected $current_controller_class_name;
 	/**
 	 * Container
 	 *
@@ -39,7 +40,7 @@ class AcceptHeaderListener
 		}
 
 		$this->current_route_pattern = $this->container->get('router')->
-										getRouteCollection()->all()[$event->getRequest()->get('_route')]->
+										getRouteCollection()->get($event->getRequest()->get('_route'))->
 										getPattern();
 
 		$current_controller = $event->getController();
@@ -52,13 +53,13 @@ class AcceptHeaderListener
 			return;
 		}
 
-		$current_controller_class_name = get_class($current_controller[0]);
+		$this->current_controller_class_name = $current_controller_class_name = get_class($current_controller[0]);
 
 		if (count($this->controllers_list) > 0) {
 			//If controllers_list is charged - we can rewrite current controller only in that controllers
 
 			foreach ($this->controllers_list as $available_controller_name) {
-				if ($current_controller_class_name == $available_controller_name) {
+				if ($this->current_controller_class_name == $available_controller_name) {
 					foreach ($this->controllers_ignore_list as $ignored_controller_name) {
 						if ($current_controller_class_name == $ignored_controller_name) {
 							return;
@@ -72,7 +73,7 @@ class AcceptHeaderListener
 			//Controllers_list is empty and we only look that current controller is available, not in ignore list
 
 			foreach ($this->controllers_ignore_list as $ignored_controller_name) {
-				if ($current_controller_class_name == $ignored_controller_name) {
+				if ($this->current_controller_class_name == $ignored_controller_name) {
 					return;
 				}
 			}
@@ -87,7 +88,7 @@ class AcceptHeaderListener
 	protected function executeRewriteRoutine(FilterControllerEvent $event)
 	{
 		if ($event->getRequest()->getRequestFormat() == $this->target_request_format) {
-			return $event->setController(function(){
+			return $event->setController(function() {
 				$controller = $this->container->get('madesst_rest.partial_documentation_controller');
 				$method = $controller->getPartialDocumentationMethod();
 				return $controller->$method($this->current_route_pattern);
