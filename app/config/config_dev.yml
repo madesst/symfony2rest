@@ -22,5 +22,8 @@ monolog:
 assetic:
     use_controller: true
 
+madesst_api_debug:
+    enabled: true
+
 #swiftmailer:
 #    delivery_address: me@example.com

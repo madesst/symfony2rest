@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 class AcceptHeaderListener
 {
 	protected $current_controller_class_name;
+
 	/**
 	 * Container
 	 *
@@ -40,8 +41,8 @@ class AcceptHeaderListener
 		}
 
 		$this->current_route_pattern = $this->container->get('router')->
-										getRouteCollection()->get($event->getRequest()->get('_route'))->
-										getPattern();
+			getRouteCollection()->get($event->getRequest()->get('_route'))->
+			getPattern();
 
 		$current_controller = $event->getController();
 
@@ -88,7 +89,7 @@ class AcceptHeaderListener
 	protected function executeRewriteRoutine(FilterControllerEvent $event)
 	{
 		if ($event->getRequest()->getRequestFormat() == $this->target_request_format) {
-			return $event->setController(function() {
+			return $event->setController(function () {
 				$controller = $this->container->get('madesst_rest.partial_documentation_controller');
 				$method = $controller->getPartialDocumentationMethod();
 				return $controller->$method($this->current_route_pattern);
