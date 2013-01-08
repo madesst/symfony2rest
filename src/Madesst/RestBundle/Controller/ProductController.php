@@ -20,8 +20,26 @@ use Madesst\RestBundle\Factory\ProductLinkFactory;
 use Hateoas\Builder\LinkBuilder;
 use Hateoas\Builder\ResourceBuilder;
 
+use Nelmio\ApiDocBundle\Annotation\ApiDoc;
+
 class ProductController extends Controller
 {
+	/**
+	 * This the documentation description of your method, it will appear
+	 * on a specific pane. It will read all the text until the first
+	 * annotation.
+	 *
+	 * @ApiDoc(
+	 *  resource=true,
+	 *  description="Returns a collection of Product in native order",
+	 *  filters={
+	 *      {"name"="page", "dataType"="integer", "default"="1"},
+	 *  },
+	 *  statusCodes={
+	 *			200="Returned when successfull"}
+	 * )
+	 * )
+	 */
 	public function AllAction()
 	{
 		$products = ProductQuery::create()->paginate($this->getRequest()->get('page', 1));
@@ -29,21 +47,79 @@ class ProductController extends Controller
 		return $this->processRenderView($products);
 	}
 
+	/**
+	 * This the documentation description of your method, it will appear
+	 * on a specific pane. It will read all the text until the first
+	 * annotation.
+	 *
+	 * @ApiDoc(
+	 *  resource=true,
+	 *  description="Returns a existing Product",
+	 *  output="Madesst\RestBundle\Propel\Product",
+	 *  statusCodes={
+	 *			200="Returned when successfull",
+	 * 			404="Returned when object not found"}
+	 * )
+	 * )
+	 */
 	public function getAction(Product $product)
 	{
 		return $this->processRenderView($product);
 	}
 
+	/**
+	 * This the documentation description of your method, it will appear
+	 * on a specific pane. It will read all the text until the first
+	 * annotation.
+	 *
+	 * @ApiDoc(
+	 *  description="Create a new Product",
+	 *  input="Madesst\RestBundle\Form\Type\ProductType",
+	 *  output="Madesst\RestBundle\Propel\Product",
+	 *  statusCodes={
+	 *			201="Returned when successfull with Location header",
+	 *			204="Returned when object already exists",
+	 *			400="Returned when input parameters are wrong"}
+	 * )
+	 */
 	public function newAction()
 	{
 		return $this->processForm(new Product());
 	}
 
+	/**
+	 * This the documentation description of your method, it will appear
+	 * on a specific pane. It will read all the text until the first
+	 * annotation.
+	 *
+	 * @ApiDoc(
+	 *  description="Update an existing Product",
+	 *  input="Madesst\RestBundle\Form\Type\ProductType",
+	 *  output="Madesst\RestBundle\Propel\Product",
+	 *  statusCodes={
+	 *			204="Returned when successfull with Location header",
+	 *			400="Returned when input parameters are wrong",
+	 * 			404="Returned when object not found"}
+	 * )
+	 */
 	public function editAction(Product $product)
 	{
 		return $this->processForm($product);
 	}
 
+	/**
+	 * This the documentation description of your method, it will appear
+	 * on a specific pane. It will read all the text until the first
+	 * annotation.
+	 *
+	 * @ApiDoc(
+	 *  resource=false,
+	 *  description="Delete a given Product",
+	 *  statusCodes={
+	 *			204="Returned when successfull",
+	 * 			404="Returned when object not found"}
+	 * )
+	 */
 	public function removeAction(Product $product)
 	{
 		$product->delete();
@@ -57,7 +133,7 @@ class ProductController extends Controller
 		$form = $this->createForm(new ProductType(), $product);
 		$form->bind($this->getRequest());
 
-		if($form->isValid()) {
+		if ($form->isValid()) {
 			$product->save();
 
 			$response = new Response();
@@ -81,19 +157,14 @@ class ProductController extends Controller
 			ProductLinkFactory::retrieveFactory(),
 			new LinkBuilder($this->get('router')));
 
-		if($data instanceof \PropelModelPager)
-		{
+		if ($data instanceof \PropelModelPager) {
 			$response = $resourceBuilder->createCollection($data, 'Madesst\RestBundle\Propel\Product');
-		}
-		elseif($data !== null)
-		{
+		} elseif ($data !== null) {
 			$response = $resourceBuilder->create($data);
-		}
-		else
-		{
+		} else {
 			$response = null;
 		}
 
-        return View::create($response, $statusCode);
+		return View::create($response, $statusCode);
 	}
 }

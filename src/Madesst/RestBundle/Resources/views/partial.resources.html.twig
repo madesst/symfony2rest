@@ -1,0 +1,24 @@
+{% extends "MadesstRestBundle::layout.html.twig" %}
+
+{% block content %}
+    {% for resource, methods in resources %}
+        <li class="resource">
+            <div class="heading" style="text-align: center;">
+                <h2>Perhaps you refer to the API method via browser, see the documentation for that endpoint bellow,
+                    or go to the <a href="{{ asset(path('nelmio_api_doc_index',{})) }}">documentation index</a></h2>
+            </div>
+            <div class="heading">
+                <h2>{{ resource }}</h2>
+            </div>
+            <ul class="endpoints">
+                <li class="endpoint">
+                    <ul class="operations">
+                        {% for data in methods %}
+                            {% include 'NelmioApiDocBundle::method.html.twig' %}
+                        {% endfor %}
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    {% endfor %}
+{% endblock content %}

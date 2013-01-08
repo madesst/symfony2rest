@@ -1,24 +1,35 @@
 parameters:
-    madesst_rest.accept_header_listener.listener_class: Madesst\RestBundle\EventListener\AcceptHeaderListener
-    madesst_rest.accept_header_listener.redirect_controller_method_name: 'methodAction'
+    madesst_rest.accept_header_listener.class: Madesst\RestBundle\EventListener\AcceptHeaderListener
+
+    madesst_rest.partial_documentation_controller.class: Madesst\RestBundle\Controller\PartialDocumentationController
+    madesst_rest.partial_documentation_controller.method: 'partialDocumentationAction'
+
     # Optional
     madesst_rest.accept_header_listener.target_request_format: 'html'
     madesst_rest.accept_header_listener.controllers_list: []
-    madesst_rest.accept_header_listener.controllers_ignore_list: []
+    madesst_rest.accept_header_listener.controllers_ignore_list: [Nelmio\ApiDocBundle\Controller\ApiDocController]
+
+    madesst_rest.formatter.partial_html_formatter.class: Madesst\RestBundle\Formatter\PartialHtmlFormatter
 
 services:
     madesst_rest.accept_header_listener:
-        class: %madesst_rest.accept_header_listener.listener_class%
+        class: %madesst_rest.accept_header_listener.class%
         arguments:
             - @service_container
-            - %madesst_rest.accept_header_listener.redirect_controller_method_name%
-            - %madesst_rest.accept_header_listener.target_request_format%
-            - %madesst_rest.accept_header_listener.controllers_list%
-            - %madesst_rest.accept_header_listener.controllers_ignore_list%
+        calls:
+            - [ setTargetRequestFormat, [ %madesst_rest.accept_header_listener.target_request_format% ] ]
+            - [ setControllersList, [ %madesst_rest.accept_header_listener.controllers_list% ] ]
+            - [ setControllersIgnoreList, [ %madesst_rest.accept_header_listener.controllers_ignore_list% ] ]
         tags:
             - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }
 
-    madesst_rest.documentation_controller:
-        class: Madesst\RestBundle\Controller\DocumentationController
+    madesst_rest.partial_documentation_controller:
+        class: %madesst_rest.partial_documentation_controller.class%
         arguments:
             - @service_container
+        calls:
+            - [ setPartialDocumentationMethod, [ %madesst_rest.partial_documentation_controller.method% ] ]
+
+    madesst_rest.formatter.partial_html_formatter:
+        class: %madesst_rest.formatter.partial_html_formatter.class%
+        parent: nelmio_api_doc.formatter.html_formatter

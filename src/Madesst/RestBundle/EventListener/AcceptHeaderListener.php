@@ -10,6 +10,7 @@ namespace Madesst\RestBundle\EventListener;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 
 class AcceptHeaderListener
 {
@@ -20,31 +21,15 @@ class AcceptHeaderListener
 	 */
 	protected $container;
 
-	protected $redirect_controller_method_name;
 	protected $target_request_format;
 	protected $controllers_list;
 	protected $controllers_ignore_list;
 
-	protected $current_route_name;
+	protected $current_route_pattern;
 
-	public function __construct($container,
-								$redirect_controller_method_name,
-								$target_request_format = 'html',
-								array $controllers_list = array(),
-								array $controllers_ignore_list = array())
+	public function __construct($container)
 	{
 		$this->container = $container;
-
-		$this->redirect_controller_method_name = $redirect_controller_method_name;
-		$this->target_request_format = $target_request_format;
-		$this->controllers_list = $controllers_list;
-		$this->controllers_ignore_list = $controllers_ignore_list;
-
-		//Prevent stupid flow
-		$this->controllers_ignore_list[] = get_class($this->container->get('madesst_rest.documentation_controller'));
-
-		//Prevent web profiler disapper
-		$this->controllers_ignore_list[] = 'Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController';
 	}
 
 	public function onKernelController(FilterControllerEvent $event)
@@ -53,7 +38,9 @@ class AcceptHeaderListener
 			return;
 		}
 
-		$this->current_route_name = $event->getRequest()->get('_route');
+		$this->current_route_pattern = $this->container->get('router')->
+										getRouteCollection()->all()[$event->getRequest()->get('_route')]->
+										getPattern();
 
 		$current_controller = $event->getController();
 
@@ -101,10 +88,47 @@ class AcceptHeaderListener
 	{
 		if ($event->getRequest()->getRequestFormat() == $this->target_request_format) {
 			return $event->setController(function(){
-				$controller = $this->container->get('madesst_rest.documentation_controller');
-				$method = $this->redirect_controller_method_name;
-				return $controller->$method($this->current_route_name);
+				$controller = $this->container->get('madesst_rest.partial_documentation_controller');
+				$method = $controller->getPartialDocumentationMethod();
+				return $controller->$method($this->current_route_pattern);
 			});
 		}
+	}
+
+	public function setTargetRequestFormat($target_request_format)
+	{
+		$this->target_request_format = $target_request_format;
+	}
+
+	public function setControllersIgnoreList($controllers_ignore_list)
+	{
+		$this->controllers_ignore_list = $controllers_ignore_list;
+
+		//Prevent stupid flow
+		$this->controllers_ignore_list[] = get_class($this->container->get('madesst_rest.partial_documentation_controller'));
+		$this->controllers_ignore_list[] = 'Symfony\Bundle\FrameworkBundle\Controller\RedirectController';
+
+		//Prevent web profiler disapper
+		$this->controllers_ignore_list[] = 'Symfony\Bundle\WebProfilerBundle\Controller\ProfilerController';
+	}
+
+	public function setControllersList($controllers_list)
+	{
+		$this->controllers_list = $controllers_list;
+	}
+
+	public function getTargetRequestFormat()
+	{
+		return $this->target_request_format;
+	}
+
+	public function getControllersList()
+	{
+		return $this->controllers_list;
+	}
+
+	public function getControllersIgnoreList()
+	{
+		return $this->controllers_ignore_list;
 	}
 }
